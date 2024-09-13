@@ -52,7 +52,7 @@ func (h *BraineeHandler) CreateBrainee(c *gin.Context) {
 func (h *BraineeHandler) GetBraineeById(c *gin.Context) {
 	idStr := c.Param("braineeId")
 	id, err := strconv.ParseInt(idStr, 10, 32)
-	if err != nil {
+	if err != nil || id <= 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid brainee Id"})
 		return
 	}
