@@ -25,7 +25,7 @@ func (s *BraineeService) CreateBrainee(brainee *entity.Brainee) error {
 	return s.repo.Create(brainee)
 }
 
-func (s *BraineeService) GetBraineeById(id uint) (*entity.Brainee, error) {
+func (s *BraineeService) GetBraineeById(id int) (*entity.Brainee, error) {
 	return s.repo.GetById(id)
 }
 
