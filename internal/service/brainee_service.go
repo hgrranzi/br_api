@@ -20,7 +20,7 @@ func (s *BraineeService) CreateBrainee(brainee *entity.Brainee) error {
 		return err
 	}
 	if existing != nil {
-		return errors.New("brainee with the same data already exists")
+		return errors.New("brainee already exists")
 	}
 	return s.repo.Create(brainee)
 }
