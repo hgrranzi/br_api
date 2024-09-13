@@ -6,26 +6,36 @@ import (
 	"br_api/internal/models/entity"
 	"br_api/internal/repository"
 	"br_api/internal/service"
-	"gorm.io/gorm"
+	"br_api/internal/transport"
 	"log"
 )
 
 func main() {
 	cfg := config.LoadConfig()
-	var err error
-	var database *gorm.DB
 
-	database, err = db.NewPostgresDB(cfg)
-	var repo repository.BraineeRepository
-	if err != nil {
-		log.Println("Error connecting to database, using in-memory storage")
-		repo = repository.NewBraineeMemoryRepository()
-	} else {
-		database.AutoMigrate(entity.Brainee{})
-		repo = repository.NewBraineeDBRepository(database)
+	repo := initializeRepository(cfg)
+	braineeService := service.NewBraineeService(repo)
+	braineeHandler := transport.NewBraineeHandler(braineeService)
+	router := transport.NewRouter(braineeHandler)
+
+	log.Println("Starting server on :8080")
+	if err := router.Run(":8080"); err != nil {
+		log.Fatalf("Could not start server: %s\n", err.Error())
 	}
 
-	braineeService := service.NewBraineeService(repo)
-	braineeService.GetBraineeById(1)
+}
 
+func initializeRepository(cfg *config.Config) repository.BraineeRepository {
+	database, err := db.NewPostgresDB(cfg)
+	if err != nil {
+		log.Println("Error connecting to database, using in-memory storage")
+		return repository.NewBraineeMemoryRepository()
+	}
+
+	if err := database.AutoMigrate(&entity.Brainee{}); err != nil {
+		log.Println("Error migrating database, using in-memory storage")
+		return repository.NewBraineeMemoryRepository()
+	}
+
+	return repository.NewBraineeDBRepository(database)
 }

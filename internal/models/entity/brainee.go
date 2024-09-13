@@ -7,5 +7,5 @@ type Brainee struct {
 	Text      string    `gorm:"column:text"`
 	Author    string    `gorm:"column:author"`
 	Brand     string    `gorm:"column:brand"`
-	CreatedAt time.Time `gorm:"column:created_at"`
+	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime"`
 }
